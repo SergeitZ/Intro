@@ -2,10 +2,8 @@ package com.careerdevs.Intro.employees;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
@@ -24,21 +22,18 @@ public class EmployeeController {
     public EmployeeController() {
         Long id = idCounter.incrementAndGet();
         employees.put(id, new Employee(id,"Sergio", "Abyss starer", 36));
+        id = idCounter.incrementAndGet();
+        employees.put(id, new Employee(id,"Maria", "Manager", 25));
     }
 
-    /*
-    CRUD
-    Create - create employee
-    Read - get one employee by id / get all employees
-    Update - update one employee by id
-    Destroy - delete one employee by id
-     */
+    // CRUD
 
     @GetMapping
     public List<Employee> all() {
         return new ArrayList<Employee>(employees.values());
      }
 
+     // Create  - create new employee
      @PostMapping
     public Employee newEmployee(@RequestBody Employee newEmployee) {
         Long id = idCounter.incrementAndGet();
@@ -47,8 +42,38 @@ public class EmployeeController {
         return newEmployee;
      }
 
-     @GetMapping("/{id}")
+     // Read - get one employee by id / get all employees
+    @GetMapping("/{id}")
     public Employee getEmployee(@PathVariable Long id) {
         return employees.get(id);
-     }
+    }
+
+    // Update - update one employee by id
+    // sometimes use PUT modern systems can POST
+    @PutMapping("/{id}")
+    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee updateData) {
+        Employee emp = employees.get(id);
+
+        if (emp == null) {
+            return emp;
+        }
+
+        if(updateData.getName() != null) {
+            emp.setName(updateData.getName());
+        }
+        if(updateData.getRole() != null) {
+            emp.setRole(updateData.getRole());
+        }
+        if(updateData.getAge() != null) {
+            emp.setAge(updateData.getAge());
+        }
+        return emp;
+    }
+
+    // Destroy - delete one employee by id
+    @DeleteMapping("/{id}")
+    public void deleteEmployee(@PathVariable Long id) {
+        employees.remove(id);
+    }
+
 }
